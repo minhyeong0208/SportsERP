@@ -1,8 +1,8 @@
 const app = Vue.createApp({
     data() {
         return {
-            incomes: [],
-            incomeList: [], 
+            expenses: [], // 지출 목록
+            expenseList: [], // 지출 항목 리스트
             selectedRows: [], 
             selectAll: false, 
             startDate: '',
@@ -10,11 +10,11 @@ const app = Vue.createApp({
             searchQuery: '', 
             editingField: null, 
             editingRow: null, 
-            newIncome: {
-                income_item: '',
-                income_purpose: '',
-                income_amount: '',
-                income_date: ''
+            newExpense: { // 새로운 지출 추가용 데이터
+                expense_item: '',
+                expense_purpose: '',
+                expense_amount: '',
+                expense_date: ''
             },
             pageNumber: 0, 
             pageSize: 10, 
@@ -45,17 +45,17 @@ const app = Vue.createApp({
     },
     methods: {
         fetchData() {
-            let url = `http://localhost/incomes?page=${this.pageNumber}&size=${this.pageSize}`;
+            let url = `http://localhost/expenses?page=${this.pageNumber}&size=${this.pageSize}`;
             if (this.isFiltered && this.startDate && this.endDate) {
-                url = `http://localhost/incomes/${this.startDate}/${this.endDate}?page=${this.pageNumber}&size=${this.pageSize}`;
+                url = `http://localhost/expenses/${this.startDate}/${this.endDate}?page=${this.pageNumber}&size=${this.pageSize}`;
             } else if (this.searchQuery) {
-                url = `http://localhost/incomes/search?query=${this.searchQuery}&page=${this.pageNumber}&size=${this.pageSize}`;
+                url = `http://localhost/expenses/search?query=${this.searchQuery}&page=${this.pageNumber}&size=${this.pageSize}`;
             }
 
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    this.incomes = data.content;
+                    this.expenses = data.content;
                     this.totalPages = data.totalPages;
                     this.pageNumber = data.number;
                 })
@@ -79,19 +79,19 @@ const app = Vue.createApp({
             this.fetchData();
         },
         toggleSelectAll() {
-            this.selectedRows = this.selectAll ? this.incomes.map(income => income.income_id) : [];
+            this.selectedRows = this.selectAll ? this.expenses.map(expense => expense.expense_id) : [];
         },
         editField(rowIndex, field) {
             this.editingField = field;
             this.editingRow = rowIndex;
         },
         saveEdit(rowIndex) {
-            const editedIncome = this.incomes[rowIndex];
-            const url = `http://localhost/incomes/${editedIncome.income_id}`;
+            const editedExpense = this.expenses[rowIndex];
+            const url = `http://localhost/expenses/${editedExpense.expense_id}`;
             fetch(url, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(editedIncome)
+                body: JSON.stringify(editedExpense)
             })
                 .then(response => {
                     if (!response.ok) throw new Error('AJAX Error');
@@ -103,15 +103,15 @@ const app = Vue.createApp({
                 })
                 .catch(error => console.log('수정 오류:', error));
         },
-        deleteSelectedIncomes() {
+        deleteSelectedExpenses() {
             const confirmed = confirm("선택한 항목들을 삭제하시겠습니까?");
             if (confirmed) {
                 this.selectedRows.forEach(id => {
-                    const url = `http://localhost/incomes/${id}`;
+                    const url = `http://localhost/expenses/${id}`;
                     fetch(url, { method: 'DELETE' })
                         .then(response => {
                             if (!response.ok) throw new Error('AJAX Error');
-                            this.incomes = this.incomes.filter(income => income.income_id !== id);
+                            this.expenses = this.expenses.filter(expense => expense.expense_id !== id);
                         })
                         .catch(error => console.log('삭제 오류:', error));
                 });
@@ -119,27 +119,27 @@ const app = Vue.createApp({
             }
         },
         openAddModal() {
-            this.newIncome = { income_item: '', income_purpose: '', income_amount: '', income_date: '' };
+            this.newExpense = { expense_item: '', expense_purpose: '', expense_amount: '', expense_date: '' };
             const modal = new bootstrap.Modal(document.getElementById('addModal'));
             modal.show();
         },
-        addIncome() {
-            if (!this.newIncome.income_item || !this.newIncome.income_purpose || !this.newIncome.income_amount || !this.newIncome.income_date) {
+        addExpense() {
+            if (!this.newExpense.expense_item || !this.newExpense.expense_purpose || !this.newExpense.expense_amount || !this.newExpense.expense_date) {
                 alert("모든 값을 입력하세요.");
                 return;
             }
-            const url = `http://localhost/incomes`;
+            const url = `http://localhost/expenses`;
             fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(this.newIncome)
+                body: JSON.stringify(this.newExpense)
             })
                 .then(response => {
                     if (!response.ok) throw new Error('AJAX Error');
                     return response.json();
                 })
-                .then(addedIncome => {
-                    this.incomes.push(addedIncome);
+                .then(addedExpense => {
+                    this.expenses.push(addedExpense);
                     const modal = bootstrap.Modal.getInstance(document.getElementById('addModal'));
                     modal.hide();
                 })
@@ -149,22 +149,22 @@ const app = Vue.createApp({
             this.pageNumber = page;
             this.fetchData();
         },
-        fetchIncomeList() {
-            fetch('http://localhost/incomelist')
+        fetchExpenseList() {
+            fetch('http://localhost/expenselist')
                 .then(response => response.json())
                 .then(data => {
-                    this.incomeList = data;
+                    this.expenseList = data;
                 })
-                .catch(error => console.error('수입 항목 리스트를 가져오지 못했습니다.', error));
+                .catch(error => console.error('지출 항목 리스트를 가져오지 못했습니다.', error));
         }
     },
     mounted() {
         this.fetchData();
-        this.fetchIncomeList();
+        this.fetchExpenseList();
     }
 });
 
 app.component('admin-header', HeaderComponent);
 app.component('admin-sidebar', SidebarComponent);
 
-app.mount('#income');
+app.mount('#expense');
