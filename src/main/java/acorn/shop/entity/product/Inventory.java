@@ -69,21 +69,15 @@ public class Inventory {
     public void updateQuantity(int newQuantity) {
         this.quantity = newQuantity;
     }
-
     public void updatePrice(BigDecimal newPrice) {
         this.price = newPrice;
     }
-
     public void updatePurchaseDate(Date newPurchaseDate) {
         this.purchaseDate = newPurchaseDate;
     }
-
-    // 추가된 메서드들
     public void updateInventoryName(String newInventoryName) {
         this.inventoryName = newInventoryName;
     }
-
     public void updateCategory(String newCategory) {
-
     }
 }

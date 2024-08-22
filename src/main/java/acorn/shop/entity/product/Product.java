@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 
 import jakarta.persistence.*;
+import org.springframework.data.mapping.model.CamelCaseAbbreviatingFieldNamingStrategy;
 
 import java.util.Date;
 
@@ -64,10 +65,12 @@ public class Product {
         productLastModiDate = new Date();
     }
 
+    public void updateProductName(String newProductName) {
+        this.productName = newProductName;
+    }
     public void updateQuantity(int newQuantity) {
         this.productQuantity = newQuantity;
     }
-
     public void updatePrice(int newPrice) {
         this.productPrice = newPrice;
     }

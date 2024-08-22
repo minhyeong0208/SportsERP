@@ -40,5 +40,4 @@ public class Cart {
     @PreUpdate
     protected void onUpdate() {
     }
-
 }

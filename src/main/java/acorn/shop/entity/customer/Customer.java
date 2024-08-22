@@ -80,9 +80,7 @@ public class Customer {
     public void updateCustomerEmail(String customerEmail) {
         this.customerEmail = customerEmail;
     }
-    public void updateCustomerPhoneNumber(String customerPhoneNumber) {
-        this.customerPhoneNumber = customerPhoneNumber;
-    }
+    public void updateCustomerPhoneNumber(String customerPhoneNumber) { this.customerPhoneNumber = customerPhoneNumber; }
     public void updateCustomerAddress(String customerAddress) {
         this.customerAddress = customerAddress;
     }
