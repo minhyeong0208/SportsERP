@@ -8,8 +8,9 @@ import acorn.shop.entity.Customer;
 import acorn.shop.repository.CustomerRepository;
 
 @Service
+//
 public class CustomerService {
-
+ 
     @Autowired
     private CustomerRepository customerRepository;
 
