@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Register</title>
+</head>
+<body>
+    <h1>회원가입</h1>
+
+    <h2>기본정보</h2>
+    <form action="#" th:action="@{/register}" th:object="${customerDto}" method="post" onsubmit="return validateForm()">
+        <!-- ID 입력 필드 추가 -->
+        <label for="id">아이디 *</label> 
+        <input type="text" id="id" th:field="*{id}" required oninput="checkDuplicateId()">
+        <p id="idCheckMessage"></p>
+        <br>
+
+        <!-- 비밀번호 관련 필드 -->
+        <label for="password">비밀번호 *</label> 
+        <input type="password" id="password" th:field="*{password}" required oninput="checkPasswordCriteria()">
+        <p id="passwordCriteria" style="color: red;">비밀번호는 8자 이상이어야 합니다.</p>
+        <br>
+
+        <label for="confirmPassword">비밀번호 확인 *</label> 
+        <input type="password" id="confirmPassword" name="confirmPassword" required oninput="checkPasswordMatch()">
+        <p id="passwordMatchMessage" style="color: red;">비밀번호가 일치하지 않습니다.</p>
+        <br>
+
+        <label for="customerName">이름 *</label> 
+        <input type="text" id="customerName" th:field="*{name}" required>
+        <br>
+
+        <label for="address">주소 *</label> 
+        <input type="text" id="address" th:field="*{address}" required>
+        <br>
+
+        <label for="detailAddress">상세 주소 *</label> 
+        <input type="text" id="detailAddress" th:field="*{detailAddress}" required>
+        <br>
+
+        <button type="button" onclick="searchAddress()">주소 검색</button>
+        <br>
+
+        <label for="phoneNumber">휴대전화 *</label> 
+        <input type="text" id="phoneNumber" th:field="*{phoneNumber}" required>
+        <br>
+
+        <label for="email">이메일 *</label> 
+        <input type="email" id="email" th:field="*{email}" required>
+        <br>
+
+        <h3>서비스 이용 동의</h3>
+        <input type="checkbox" id="checkAll" name="checkAll" onclick="toggleAllCheckboxes(this)">
+        <p>이용약관에 모두 동의합니다.(선택 정보 포함)<br> 이용약관 및 개인정보 수집 및 이용에 모두 동의합니다.</p>
+        <input type="checkbox" id="checkAgree" name="checkAgree">
+        <p>[필수] 이용약관에 동의합니다.</p>
+        <a href="/terms" target="_blank">이용약관 확인</a><br>
+        <br> 
+        <input type="checkbox" id="checkInfo" name="checkInfo">
+        <p>[필수] 개인정보 수집 및 이용에 동의합니다.</p>
+        <a href="/privacy-policy" target="_blank">개인정보 수집 및 이용 확인</a><br>
+        <br>
+
+        <button type="submit">가입하기</button>
+    </form>
+
+    <script>
+        function checkDuplicateId() {
+            var id = document.getElementById('id').value;
+            fetch('/check-id?value=' + encodeURIComponent(id))
+                .then(response => response.json())
+                .then(isAvailable => {
+                    var messageElement = document.getElementById('idCheckMessage');
+                    if (isAvailable) {
+                        messageElement.textContent = "아이디 사용 가능";
+                        messageElement.style.color = "green";
+                    } else {
+                        messageElement.textContent = "아이디가 이미 존재합니다.";
+                        messageElement.style.color = "red";
+                    }
+                });
+        }
+
+        function checkPasswordCriteria() {
+            var password = document.getElementById('password').value;
+            var criteriaMessage = document.getElementById('passwordCriteria');
+            if (password.length >= 8) {
+                criteriaMessage.style.color = "green";
+                criteriaMessage.textContent = "비밀번호 조건 충족";
+            } else {
+                criteriaMessage.style.color = "red";
+                criteriaMessage.textContent = "비밀번호는 8자 이상이어야 합니다.";
+            }
+        }
+
+        function checkPasswordMatch() {
+            var password = document.getElementById('password').value;
+            var confirmPassword = document.getElementById('confirmPassword').value;
+            var matchMessage = document.getElementById('passwordMatchMessage');
+            if (password === confirmPassword) {
+                matchMessage.style.color = "green";
+                matchMessage.textContent = "비밀번호가 일치합니다.";
+            } else {
+                matchMessage.style.color = "red";
+                matchMessage.textContent = "비밀번호가 일치하지 않습니다.";
+            }
+        }
+
+        function toggleAllCheckboxes(source) {
+            document.getElementById('checkAgree').checked = source.checked;
+            document.getElementById('checkInfo').checked = source.checked;
+        }
+
+        function searchAddress() {
+            alert("주소 검색 기능은 구현되지 않았습니다.");
+        }
+
+        function validateForm() {
+            var checkAgree = document.getElementById('checkAgree').checked;
+            var checkInfo = document.getElementById('checkInfo').checked;
+            if (!checkAgree || !checkInfo) {
+                alert("이용약관 및 개인정보 수집 및 이용에 동의해야 합니다.");
+                return false;
+            }
+            return true;
+        }
+    </script>
+</body>
+</html>
