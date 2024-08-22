@@ -17,21 +17,32 @@ const app = Vue.createApp({
         };
     },
     methods: {
-		loadPlayers() {
-		        fetch('/players')
-		            .then(response => response.json())
-		            .then(data => {
-		                this.players = data.map(player => {
-		                    if (player.playerImage) {
-		                        player.playerImage += `?t=${new Date().getTime()}`;
-		                    }
-		                    return player;
-		                });
-		            })
-		            .catch(error => {
-		                console.error("선수 데이터를 가져오는 데 실패했습니다:", error);
-		            });
-		    },
+        loadPlayers() {
+            fetch('/players')
+                .then(response => response.json())
+                .then(data => {
+                    this.players = data;
+                })
+                .catch(error => {
+                    console.error("선수 데이터를 가져오는 데 실패했습니다:", error);
+                });
+        },
+        openAddPlayerModal() {
+            this.editingPlayerId = null;  // 새 선수 추가 모드로 전환
+            this.playerForm = {
+                playerBn: '',
+                playerName: '',
+                playerPosition: '',
+                playerNationality: '',
+                playerPotential: '',
+                playerBirth: '',
+                contractStartDate: '',
+                contractEndDate: '',
+                career: ''
+            };
+            const modal = new bootstrap.Modal(document.getElementById('playerModal'));
+            modal.show();
+        },
         editPlayer(player) {
             this.editingPlayerId = player.playerId;
             this.playerForm = { ...player };
@@ -97,27 +108,15 @@ const app = Vue.createApp({
             .catch(error => {
                 console.error("선수 정보를 저장하는 데 실패했습니다:", error);
             });
-        },
-        openAddPlayerModal() {
-            this.editingPlayerId = null;
-            this.playerForm = {
-                playerBn: '',
-                playerName: '',
-                playerPosition: '',
-                playerNationality: '',
-                playerPotential: '',
-                playerBirth: '',
-                contractStartDate: '',
-                contractEndDate: '',
-                career: ''
-            };
-            const modal = new bootstrap.Modal(document.getElementById('playerModal'));
-            modal.show();
         }
     },
     mounted() {
         this.loadPlayers();
     }
 });
+
+
+app.component('admin-header', HeaderComponent);
+app.component('admin-sidebar', SidebarComponent);
 
 app.mount('#app');
