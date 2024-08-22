@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 
 import jakarta.persistence.*;
-import org.springframework.data.mapping.model.CamelCaseAbbreviatingFieldNamingStrategy;
 
 import java.util.Date;
 
