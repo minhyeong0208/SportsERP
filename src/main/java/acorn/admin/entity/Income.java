@@ -23,24 +23,24 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 public class Income {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int incomeId;
-	
-	private int incomeAmount;
-	private String incomePurpose;
-	private Date incomeDate;
-	
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "income_item", referencedColumnName = "id")
-	private IncomeList incomeList;
-	
-	public static Income toEntity(IncomeDto dto, IncomeList incomeList) {
-		return Income.builder()
-				.incomeAmount(dto.getIncome_amount())
-				.incomePurpose(dto.getIncome_purpose())
-				.incomeDate(dto.getIncome_date())
-				.incomeList(incomeList)
-	            .build();
-	}
+   @Id
+   @GeneratedValue(strategy = GenerationType.IDENTITY)
+   private int incomeId;
+   
+   private int incomeAmount;
+   private String incomePurpose;
+   private Date incomeDate;
+   
+   @ManyToOne(fetch = FetchType.EAGER)
+   @JoinColumn(name = "income_item", referencedColumnName = "id")
+   private IncomeList incomeList;
+   
+   public static Income toEntity(IncomeDto dto, IncomeList incomeList) {
+      return Income.builder()
+            .incomeAmount(dto.getIncome_amount())
+            .incomePurpose(dto.getIncome_purpose())
+            .incomeDate(dto.getIncome_date())
+            .incomeList(incomeList)
+               .build();
+   }
 }

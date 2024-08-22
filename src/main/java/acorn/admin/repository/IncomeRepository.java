@@ -13,14 +13,14 @@ import org.springframework.data.repository.query.Param;
 import acorn.admin.entity.Income;
 
 public interface IncomeRepository extends JpaRepository<Income, Integer>{
-	
-	Income findById(int id);
-	
-	Page<Income> findAll(Pageable pageable);
-	
-	// 팀별 일정 기간의 수입 내역 확인 쿼리 메소드
-	Page<Income> findByIncomeDateBetween(Date startDate, Date endDate, Pageable pageable);
-	
+   
+   Income findById(int id);
+   
+   Page<Income> findAll(Pageable pageable);
+   
+   // 팀별 일정 기간의 수입 내역 확인 쿼리 메소드
+   Page<Income> findByIncomeDateBetween(Date startDate, Date endDate, Pageable pageable);
+   
     // 새로운 검색 쿼리 메서드 추가
     Page<Income> findByIncomePurposeContainingOrIncomeList_NameContaining(String incomePurpose, String incomeItem, Pageable pageable);
 

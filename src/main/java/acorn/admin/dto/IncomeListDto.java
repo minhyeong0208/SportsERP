@@ -14,14 +14,14 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class IncomeListDto {
-	private int id;
-	private String name;
-	
-	public static IncomeListDto toDto(IncomeList incomeList) {
-		return IncomeListDto.builder()
-				.id(incomeList.getId())
-				.name(incomeList.getName())
-	
-				.build();
-	}
+   private int id;
+   private String name;
+   
+   public static IncomeListDto toDto(IncomeList incomeList) {
+      return IncomeListDto.builder()
+            .id(incomeList.getId())
+            .name(incomeList.getName())
+   
+            .build();
+   }
 }
