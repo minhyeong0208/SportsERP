@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Team ERP</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Admin CSS -->
+    <link rel="stylesheet" href="admin.css">
+    <!-- Vue.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
+    <style>
+        .modal-backdrop {
+            z-index: 1040;
+        }
+
+        .modal {
+            z-index: 1050;
+        }
+
+        .modal-dialog {
+            margin-top: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <admin-header></admin-header>
+        <admin-sidebar></admin-sidebar>
+
+        <!-- Content -->
+        <div id="content" class="container-fluid">
+            <div class="row mb-4">
+                <div class="col-md-5">
+                    <label for="startDate">시작 날짜:</label>
+                    <input type="date" v-model="startDate" class="form-control" id="startDate">
+                </div>
+                <div class="col-md-5">
+                    <label for="endDate">종료 날짜:</label>
+                    <input type="date" v-model="endDate" class="form-control" id="endDate">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button @click="fetchFilteredData" class="btn btn-primary w-100">데이터 조회</button>
+                </div>
+            </div>
+
+            <!-- 추가 버튼 -->
+            <div class="mb-4">
+                <button @click="openAddModal" class="btn btn-success">수입 추가</button>
+            </div>
+
+            <div class="table-responsive">
+                <table v-if="incomes.length > 0" class="table table-bordered table-hover table-striped align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col">번호</th>
+                            <th scope="col">수입 항목</th>
+                            <th scope="col">적요</th>
+                            <th scope="col">금액</th>
+                            <th scope="col">날짜</th>
+                            <th scope="col">수정/삭제</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(income, index) in incomes" :key="index">
+                            <td>{{ income.income_id }}</td>
+                            <td>{{ income.income_item }}</td>
+                            <td>{{ income.income_purpose }}</td>
+                            <td>{{ income.income_amount }}</td>
+                            <td>{{ income.income_date }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-warning" @click="openEditModal(income)">수정</button>
+                                <button class="btn btn-sm btn-danger" @click="deleteIncome(income.income_id)">삭제</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 페이지 네비게이션 -->
+            <nav v-if="totalPages > 1" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" :class="{ disabled: pageNumber === 0 }">
+                        <button class="page-link" @click="changePage(pageNumber - 1)" :disabled="pageNumber === 0">이전</button>
+                    </li>
+                    <li class="page-item" v-for="page in totalPages" :key="page" :class="{ active: pageNumber === page - 1 }">
+                        <button class="page-link" @click="changePage(page - 1)">{{ page }}</button>
+                    </li>
+                    <li class="page-item" :class="{ disabled: pageNumber === totalPages - 1 }">
+                        <button class="page-link" @click="changePage(pageNumber + 1)" :disabled="pageNumber === totalPages - 1">다음</button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Add Modal -->
+        <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addModalLabel">수입 추가</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="newIncomeItem" class="form-label">수입 항목</label>
+                            <input type="text" class="form-control" id="newIncomeItem" v-model="newIncome.income_item">
+                        </div>
+                        <div class="mb-3">
+                            <label for="newIncomePurpose" class="form-label">적요</label>
+                            <input type="text" class="form-control" id="newIncomePurpose" v-model="newIncome.income_purpose">
+                        </div>
+                        <div class="mb-3">
+                            <label for="newIncomeAmount" class="form-label">금액</label>
+                            <input type="number" class="form-control" id="newIncomeAmount" v-model="newIncome.income_amount">
+                        </div>
+                        <div class="mb-3">
+                            <label for="newIncomeDate" class="form-label">날짜</label>
+                            <input type="date" class="form-control" id="newIncomeDate" v-model="newIncome.income_date">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                        <button type="button" class="btn btn-primary" @click="addIncome">저장</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">수입 수정</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="incomeItem" class="form-label">수입 항목</label>
+                    <select class="form-select" id="incomeItem" v-model="editIncome.income_item">
+                        <option v-for="item in incomeList" :key="item.id" :value="item.name">
+                            {{ item.name }}
+                        </option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="incomePurpose" class="form-label">적요</label>
+                    <input type="text" class="form-control" id="incomePurpose" v-model="editIncome.income_purpose">
+                </div>
+                <div class="mb-3">
+                    <label for="incomeAmount" class="form-label">금액</label>
+                    <input type="number" class="form-control" id="incomeAmount" v-model="editIncome.income_amount">
+                </div>
+                <div class="mb-3">
+                    <label for="incomeDate" class="form-label">날짜</label>
+                    <input type="date" class="form-control" id="incomeDate" v-model="editIncome.income_date">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                <button type="button" class="btn btn-primary" @click="updateIncome">저장</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+        
+    </div>
+
+    <!-- 외부 컴포넌트 파일 -->
+    <script src="admin-header.js"></script>
+    <script src="admin-sidebar.js"></script>
+
+    <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    incomes: [],
+                    incomeList: [], // income list from incomelist API
+                    startDate: '',
+                    endDate: '',
+                    editIncome: {},
+                    newIncome: {
+                        income_item: '',
+                        income_purpose: '',
+                        income_amount: '',
+                        income_date: ''
+                    },
+                    pageNumber: 0,
+                    pageSize: 10,
+                    totalPages: 0,
+                    isFiltered: false
+                };
+            },
+            methods: {
+                fetchData() {
+                    let url;
+
+                    if (this.isFiltered && this.startDate && this.endDate) {
+                        url = `http://localhost/incomes/${this.startDate}/${this.endDate}?page=${this.pageNumber}&size=${this.pageSize}`;
+                    } else {
+                        url = `http://localhost/incomes?page=${this.pageNumber}&size=${this.pageSize}`;
+                    }
+
+                    fetch(url)
+                        .then(response => response.json())
+                        .then(data => {
+                            this.incomes = data.content;
+                            this.totalPages = data.totalPages;
+                            this.pageNumber = data.number;
+                        })
+                        .catch(error => console.error(error));
+                },
+                fetchFilteredData() {
+                    if (this.startDate && this.endDate) {
+                        this.pageNumber = 0;
+                        this.isFiltered = true;
+                        this.fetchData();
+                    } else {
+                        alert("시작 날짜와 종료 날짜를 입력해주세요.");
+                    }
+                },
+                changePage(page) {
+                    this.pageNumber = page;
+                    this.fetchData();
+                },
+                openEditModal(income) {
+                    this.editIncome = { ...income };
+                    const modal = new bootstrap.Modal(document.getElementById('editModal'));
+                    modal.show();
+                },
+                updateIncome() {
+                    const url = `http://localhost/incomes/${this.editIncome.income_id}`;
+                    fetch(url, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(this.editIncome)
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('AJAX Error');
+                        }
+                        return response.json();
+                    })
+                    .then(updatedIncome => {
+                        const index = this.incomes.findIndex(income => income.income_id === updatedIncome.income_id);
+                        if (index !== -1) {
+                            this.incomes[index] = updatedIncome;
+                        }
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
+                        modal.hide();
+                    })
+                    .catch(error => console.log('수정 오류:', error));
+                },
+                deleteIncome(incomeId) {
+                    const url = `http://localhost/incomes/${incomeId}`;
+                    fetch(url, {
+                        method: 'DELETE'
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('AJAX Error');
+                        }
+                        this.incomes = this.incomes.filter(income => income.income_id !== incomeId);
+                    })
+                    .catch(error => console.log('삭제 오류:', error));
+                },
+                openAddModal() {
+                    this.newIncome = { income_item: '', income_purpose: '', income_amount: '', income_date: '' };
+                    const modal = new bootstrap.Modal(document.getElementById('addModal'));
+                    modal.show();
+                },
+                addIncome() {
+                    const url = `http://localhost/incomes`;
+                    fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(this.newIncome)
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('AJAX Error');
+                        }
+                        return response.json();
+                    })
+                    .then(addedIncome => {
+                        this.incomes.push(addedIncome);
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('addModal'));
+                        modal.hide();
+                    })
+                    .catch(error => console.log('추가 오류:', error));
+                },
+                fetchIncomeList() {
+                    // Fetching income categories for select dropdown
+                    fetch('http://localhost/incomelist')
+                        .then(response => response.json())
+                        .then(data => {
+                            this.incomeList = data;
+                        })
+                        .catch(error => console.error('Income list fetch error:', error));
+                }
+            },
+            mounted() {
+                this.fetchData();
+                this.fetchIncomeList(); // Fetch the income categories when the app is mounted
+            }
+        });
+
+        app.component('admin-header', HeaderComponent);
+        app.component('admin-sidebar', SidebarComponent);
+
+        app.mount('#app');
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
