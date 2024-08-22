@@ -30,7 +30,7 @@ const SidebarComponent = {
                 </h2>
                 <div id="collapseHR" class="accordion-collapse collapse show" aria-labelledby="headingHR">
                     <div class="accordion-body">
-                        <a class="nav-link" href="#">선수 관리</a>
+                        <a class="nav-link" href="./player.html">선수 관리</a>
                         <a class="nav-link" href="#">코치 관리</a>
                     </div>
                 </div>

@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import acorn.admin.dto.PlayerDto;
 import acorn.admin.entity.Player;
-import acorn.admin.repository.PlayerRepository;
+import acorn.admin.repository.PlayerRepository; 
 
 @Service
 public class PlayerService {
@@ -79,12 +79,16 @@ public class PlayerService {
 
             try {
                 image.transferTo(filePath.toFile());
-                return "/admin/img/" + fileName;
+
+                // 이미지 URL에 타임스탬프 추가
+                String timeStamp = String.valueOf(System.currentTimeMillis());
+                return "/admin/img/" + fileName + "?t=" + timeStamp;
             } catch (IOException e) {
                 throw new IOException("이미지를 저장할 수 없습니다: " + filePath.toString(), e);
             }
         }
         return null;
     }
+
 
 }

@@ -31,7 +31,7 @@ public class IncomeController {
    private IncomeService incomeService;
 
    @Autowired
-    private IncomeListRepository incomeListRepository;
+   private IncomeListRepository incomeListRepository;
    
    // 수입 항목 데이터
    @GetMapping("/incomelist")
