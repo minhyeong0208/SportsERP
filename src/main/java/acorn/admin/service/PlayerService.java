@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import acorn.admin.dto.PlayerDto;
 import acorn.admin.entity.Player;
-import acorn.admin.repository.PlayerRepository;
+import acorn.admin.repository.PlayerRepository; 
 
 @Service
 public class PlayerService {
@@ -68,7 +68,10 @@ public class PlayerService {
     // 이미지 저장 메서드
     private String saveImage(MultipartFile image) throws IOException {
         if (image != null && !image.isEmpty()) {
-            String fileName = image.getOriginalFilename();
+            // 타임스탬프를 파일명에 추가하여 고유한 파일명을 생성
+            String originalFileName = image.getOriginalFilename();
+            String timestamp = String.valueOf(System.currentTimeMillis());
+            String fileName = timestamp + "_" + originalFileName;
             Path filePath = Paths.get(IMAGE_DIR, fileName);
 
             // 디렉토리 존재 여부 확인 및 생성
@@ -78,9 +81,14 @@ public class PlayerService {
             }
 
             try {
+                // 파일을 서버에 저장
                 image.transferTo(filePath.toFile());
+
+                // 파일 저장 후 약간의 지연 시간 추가 (파일 시스템 동기화 문제 방지)
+                Thread.sleep(100); // 100ms 지연
+
                 return "/admin/img/" + fileName;
-            } catch (IOException e) {
+            } catch (IOException | InterruptedException e) {
                 throw new IOException("이미지를 저장할 수 없습니다: " + filePath.toString(), e);
             }
         }

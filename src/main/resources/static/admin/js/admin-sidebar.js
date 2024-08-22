@@ -1,7 +1,7 @@
 // SidebarComponent 정의
 const SidebarComponent = {
-    template: `
-      <!-- Sidebar -->
+	template: `
+    <!-- Sidebar -->
     <div id="sidebar">
         <!-- 프로필 섹션 -->
         <div id="profile-section">
@@ -46,8 +46,8 @@ const SidebarComponent = {
                 <div id="collapseFinance" class="accordion-collapse collapse show" aria-labelledby="headingFinance">
                     <div class="accordion-body">
                         <a class="nav-link" href="./income.html">수입</a>
-                        <a class="nav-link" href="#">지출</a>
-                        <a class="nav-link" href="#">손익계산</a>
+                        <a class="nav-link" href="./expense.html">지출</a>
+                        <a class="nav-link" href="./statement.html">손익계산</a>
                     </div>
                 </div>
             </div>
@@ -84,5 +84,4 @@ const SidebarComponent = {
         </div>
     </div>
     `
-  };
-  
+};
