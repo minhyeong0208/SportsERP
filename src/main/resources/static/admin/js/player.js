@@ -33,7 +33,7 @@ $(document).ready(function() {
                 method: "DELETE",
                 success: function() {
                     alert('선수가 삭제되었습니다.');
-                    loadPlayers();
+                    location.reload(); // 성공 후 페이지 새로고침
                 },
                 error: function(error) {
                     console.error("선수 삭제에 실패했습니다:", error);
@@ -110,7 +110,7 @@ function savePlayer() {
             $('#playerForm').trigger("reset");
             const modal = bootstrap.Modal.getInstance(document.getElementById('playerModal'));
             modal.hide();
-            loadPlayers();
+            location.reload(); // 성공 후 페이지 새로고침
         },
         error: function(error) {
             console.error("선수 정보를 저장하는 데 실패했습니다:", error);

@@ -24,6 +24,11 @@ public class PlayerController {
 
     @Autowired
     private PlayerService playerService;
+    
+    @GetMapping("/players")
+    public String showPlayerPage() {
+        return "redirect:/admin/player.html";
+    }
 
     @GetMapping
     public List<Player> getAllPlayers() {
