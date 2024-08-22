@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 import jakarta.persistence.*;
@@ -27,12 +26,12 @@ import jakarta.persistence.*;
  *              .category("Gadgets")
  *              .quantity(100)
  *              .purchaseDate(new Date())
- *              .price(1000.00)
+ *              .price(1000)
  *              .build();
  *
  * // 수량, 가격, 판매일 업데이트
  * inventory.updateQuantity(150);
- * inventory.updatePrice(BigDecimal.valueOf(3000));
+ * inventory.updatePrice(3000);
  * inventory.updatePurchaseDate(new Date());
  */
 public class Inventory {
@@ -54,8 +53,8 @@ public class Inventory {
     @Temporal(TemporalType.DATE)
     private Date purchaseDate;
 
-    @Column(name = "price", precision = 10, scale = 2)
-    private BigDecimal price;
+    @Column(name = "price", nullable = false)
+    private int price;
 
     @PrePersist
     protected void onCreate() {
@@ -69,7 +68,7 @@ public class Inventory {
     public void updateQuantity(int newQuantity) {
         this.quantity = newQuantity;
     }
-    public void updatePrice(BigDecimal newPrice) {
+    public void updatePrice(int newPrice) {
         this.price = newPrice;
     }
     public void updatePurchaseDate(Date newPurchaseDate) {

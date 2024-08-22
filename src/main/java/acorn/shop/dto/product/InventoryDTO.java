@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 @Getter
@@ -20,5 +19,5 @@ public class InventoryDTO extends ShopDTO {
     private String category;
     private int quantity;
     private Date purchaseDate;
-    private BigDecimal price;
+    private int price;
 }
