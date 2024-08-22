@@ -79,7 +79,7 @@ function loadPlayers() {
 
 function savePlayer() {
     const form = $('#playerForm')[0];
-    const formData = new FormData(form);
+    const formData = new FormData(form); 
 
     const playerData = {
         playerBn: form.playerBn.value,
