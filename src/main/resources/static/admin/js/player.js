@@ -115,6 +115,7 @@ const app = Vue.createApp({
     }
 });
 
+
 app.component('admin-header', HeaderComponent);
 app.component('admin-sidebar', SidebarComponent);
 
