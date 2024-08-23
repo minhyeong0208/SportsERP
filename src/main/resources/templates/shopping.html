@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>강원 fc 온라인 스토어</title>
+    <title>강원FC 온라인 스토어</title>
     <link rel="stylesheet" th:href="@{/shop/css/shopping.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
@@ -13,7 +13,7 @@
         <div class="hamburger-menu">
             <i class="fas fa-bars"></i>
         </div>
-        <div><!-- css 가운데로 보내버리깅 -->
+        <div>
             <img th:src="@{/shop/img/emblem.png}" id="main-logo"> <!-- 메인 홈 로고 -->
         </div>
         <nav id="login">
@@ -41,49 +41,12 @@
                 <h1>2024 SEASON GANGWON FCOFFICIAL ONLINE MD STORE</h1>
             </div>
             <br><br>
-
-
-
-<!--            Thymeleaf를 사용하여 DB 데이터를 표시-->
-<!--            <div class="products">-->
-<!--                <div class="product-container" th:each="product : ${products}">-->
-<!--                    <div class="product-image"></div>-->
-<!--                    <p class="product-name" th:text="${product.productName}">상품 이름</p>-->
-<!--                    <p class="product-price" th:text="${#numbers.formatDecimal(product.productPrice, 0, 'COMMA', 0, 'POINT')} + '원'">가격</p>-->  <!-- 천 단위로 표시 -->
-<!--                </div>-->
-<!--            </div>-->
-
+            <!-- Thymeleaf를 사용하여 DB 데이터를 표시 -->
             <div class="products">
-                <div class="product-container">
-                    <div class="product-image"></div>
-                    <p class="product-name">상품 이름 1</p>
-                    <p class="product-price">10,000원</p>
-                </div>
-                <div class="product-container">
-                    <div class="product-image"></div>
-                    <p class="product-name">상품 이름 2</p>
-                    <p class="product-price">20,000원</p>
-                </div>
-                <div class="product-container">
-                    <div class="product-image"></div>
-                    <p class="product-name">상품 이름 3</p>
-                    <p class="product-price">30,000원</p>
-                </div>
-
-                <div class="product-container">
-                    <div class="product-image"></div>
-                    <p class="product-name">상품 이름 4</p>
-                    <p class="product-price">10,000원</p>
-                </div>
-                <div class="product-container">
-                    <div class="product-image"></div>
-                    <p class="product-name">상품 이름 5</p>
-                    <p class="product-price">20,000원</p>
-                </div>
-                <div class="product-container">
-                    <div class="product-image"></div>
-                    <p class="product-name">상품 이름 6</p>
-                    <p class="product-price">30,000원</p>
+                <div class="product-container" th:each="product : ${products}">
+                    <div class="product-image" th:data-product-id="${product.productId}"></div> <!-- 상품 이미지를 누르면 상세 페이지로 이동 -->
+                    <p class="product-name" th:text="${product.productName}">상품 이름</p>
+                    <p class="product-price" th:text="${#numbers.formatDecimal(product.productPrice, 0, 'COMMA', 0, 'POINT')} + '원'">가격</p> <!-- 천 단위로 표시 -->
                 </div>
             </div>
         </div>
@@ -113,6 +76,29 @@
         document.querySelector('header').style.marginLeft = '0';
         document.querySelector('.hamburger-menu').style.display = 'block';
         document.querySelector('.close-btn').style.display = 'none';
+    });
+
+    // 상품 상세 페이지
+    document.addEventListener('DOMContentLoaded', function() {
+        const productImages = document.querySelectorAll('.product-image');
+        const contentDiv = document.querySelector('.content');
+
+        productImages.forEach(image => {
+            image.addEventListener('click', function(e) {
+                const productId = this.getAttribute('data-product-id');
+                fetchProductDetails(productId);
+            });
+        });
+
+        function fetchProductDetails(productId) {
+            fetch(`/api/product/${productId}`)
+                .then(response => response.text())
+                .then(html => {
+                    contentDiv.innerHTML = html;
+                    history.pushState({}, '', `/product/${productId}`);
+                })
+                .catch(error => console.error('Error:', error));
+        }
     });
 </script>
 </body>
